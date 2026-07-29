@@ -16,21 +16,27 @@ const fetchAPI = async (endpoint, options = {}) => {
     ...options.headers,
   };
   
-  // Realizar la consulta mediante el fetch nativo del navegador
-  const response = await fetch(url, {
-    ...options,
-    headers,
-  });
-  
-  const result = await response.json();
-  
-  if (!response.ok) {
-    // Capturar y propagar el mensaje de error provisto por el backend
-    throw new Error(result.error?.message || 'Ocurrió un error inesperado en el servidor.');
+  try {
+    const response = await fetch(url, {
+      ...options,
+      headers,
+    });
+    
+    const result = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(result.error?.message || 'Ocurrió un error inesperado en el servidor.');
+    }
+    
+    return result.data;
+  } catch (err) {
+    if (err.name === 'TypeError' || err.message.includes('fetch')) {
+      throw new Error('No se pudo establecer conexión con el servidor. Verifica que el backend esté en ejecución.');
+    }
+    throw err;
   }
-  
-  return result.data;
 };
+
 
 export const autoresService = {
   /**
@@ -287,79 +293,38 @@ export const publicacionesService = {
 };
 
 export const resenasService = {
-  /**
-   * Obtiene todas las reseñas de una biblioteca/sede física específica.
-   * 
-   * @param {number|string} idBiblioteca - ID de la biblioteca (id_biblioteca).
-   * @returns {Promise<Array<object>>} Listado de reseñas.
-   */
+  getByLibro: (idLibro) => fetchAPI(`/libros/${idLibro}/resenas`),
+  crearResenaLibro: (data) => fetchAPI('/libros/resenas', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  getByBiblioteca: (idBiblioteca) => fetchAPI(`/bibliotecas/${idBiblioteca}/resenas`),
   getPorBiblioteca: (idBiblioteca) => fetchAPI(`/bibliotecas/${idBiblioteca}/resenas`),
-
-  /**
-   * Registra una nueva reseña/valoración de una sede.
-   * 
-   * @param {object} data - Datos de la reseña (id_biblioteca, id_usuario, valoracion, comentarios).
-   * @returns {Promise<object>} La reseña creada.
-   */
   crear: (data) => fetchAPI('/bibliotecas/resenas', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  crearResenaBiblioteca: (data) => fetchAPI('/bibliotecas/resenas', {
     method: 'POST',
     body: JSON.stringify(data),
   }),
 };
 
 export const usuariosService = {
-  /**
-   * Obtiene la lista de todos los usuarios registrados en el sistema.
-   * 
-   * @returns {Promise<Array<object>>} Listado de usuarios.
-   */
   getAll: () => fetchAPI('/usuarios'),
 };
 
 export const configService = {
-  /**
-   * Obtiene las opciones de estado físico para los libros.
-   * 
-   * @returns {Promise<Array<object>>}
-   */
   getEstados: () => fetchAPI('/config/estados'),
-
-  /**
-   * Agrega una nueva categoría de estado físico de libros.
-   * 
-   * @param {string} tipo - Nombre del estado físico (tipo_estado).
-   * @returns {Promise<object>}
-   */
   crearEstado: (tipo) => fetchAPI('/config/estados', {
     method: 'POST',
     body: JSON.stringify({ tipo_estado: tipo }),
   }),
-
-  /**
-   * Consulta los estados lógicos de disponibilidad.
-   * 
-   * @returns {Promise<Array<object>>}
-   */
   getDisponibilidades: () => fetchAPI('/config/disponibilidad'),
 };
 
 export const preferenciasService = {
-  /**
-   * Consulta la lista de libros en seguimiento y alertas configuradas por un usuario.
-   * 
-   * @param {string} idUsuario - UUID del usuario.
-   * @returns {Promise<Array<object>>}
-   */
   getByUsuario: (idUsuario) => fetchAPI(`/preferencias_usuarios/${idUsuario}`),
-
-  /**
-   * Actualiza el estado lógico por el que el usuario quiere ser alertado para un libro.
-   * 
-   * @param {string} idUsuario - UUID del usuario.
-   * @param {number|string} idLibro - ID del libro.
-   * @param {number|string|null} idEstado - ID del estado de disponibilidad.
-   * @returns {Promise<object>}
-   */
   updateAlerta: (idUsuario, idLibro, idEstado) => fetchAPI('/preferencias_usuarios', {
     method: 'PATCH',
     body: JSON.stringify({
@@ -369,6 +334,21 @@ export const preferenciasService = {
     }),
   }),
 };
+
+export const prestamosService = {
+  getAll: () => fetchAPI('/prestamos'),
+  getByUsuario: (idUsuario) => fetchAPI(`/prestamos/usuario/${idUsuario}`),
+  crear: (data) => fetchAPI('/prestamos', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  }),
+  devolver: (id) => fetchAPI(`/prestamos/${id}/devolucion`, {
+    method: 'PATCH',
+  }),
+};
+
+
+
 
 
 

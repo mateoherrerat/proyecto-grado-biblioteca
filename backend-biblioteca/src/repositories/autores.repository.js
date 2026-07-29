@@ -6,7 +6,16 @@ import { query } from '../config/database.js';
  * @returns {Promise<Array<object>>} Lista de objetos de autores con sus datos.
  */
 export const findAll = async () => {
-  const result = await query('SELECT * FROM autores ORDER BY id_autor ASC;');
+  const result = await query(`
+    SELECT 
+      a.id_autor,
+      a.nombre,
+      COUNT(al.id_libro)::int AS libros_count
+    FROM autores a
+    LEFT JOIN autores_libros al ON a.id_autor = al.id_autor
+    GROUP BY a.id_autor
+    ORDER BY a.nombre ASC;
+  `);
   return result.rows;
 };
 

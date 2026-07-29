@@ -1,0 +1,4 @@
+{
+  "project": "proyecto-grado-biblioteca",
+  "name_pattern": ".*Service|.*Repository|.*Controller|.*Context|.*Hook"
+}

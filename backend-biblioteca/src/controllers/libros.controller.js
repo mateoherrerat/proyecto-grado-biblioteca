@@ -54,13 +54,16 @@ export const getLibroById = async (req, res, next) => {
  */
 export const createLibro = async (req, res, next) => {
   try {
-    const { isbn, titulo, editorial, sinopsis, fecha_publicacion } = req.body;
+    const { isbn, titulo, editorial, sinopsis, fecha_publicacion, portada, id_categoria, slug } = req.body;
     const newLibro = await librosService.createLibro({
       isbn,
       titulo,
       editorial,
       sinopsis,
-      fecha_publicacion
+      fecha_publicacion,
+      portada,
+      id_categoria,
+      slug
     });
     
     res.status(201).json({
@@ -83,13 +86,16 @@ export const createLibro = async (req, res, next) => {
 export const updateLibro = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { isbn, titulo, editorial, sinopsis, fecha_publicacion } = req.body;
+    const { isbn, titulo, editorial, sinopsis, fecha_publicacion, portada, id_categoria, slug } = req.body;
     const updatedLibro = await librosService.updateLibro(id, {
       isbn,
       titulo,
       editorial,
       sinopsis,
-      fecha_publicacion
+      fecha_publicacion,
+      portada,
+      id_categoria,
+      slug
     });
     
     res.status(200).json({

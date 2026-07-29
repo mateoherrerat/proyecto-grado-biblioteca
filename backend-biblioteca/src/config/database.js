@@ -11,10 +11,24 @@ const isProduction = process.env.NODE_ENV === 'production';
 // Soporte para URL de conexión completa o variables individuales
 const connectionString = process.env.DATABASE_URL;
 
+let sslConfig = false;
+if (isProduction) {
+  sslConfig = { rejectUnauthorized: false };
+} else {
+  // En desarrollo local, si no es localhost, habilitamos SSL (requerido por Supabase)
+  const host = connectionString 
+    ? (connectionString.includes('@') ? connectionString.split('@')[1].split('/')[0].split(':')[0] : '')
+    : process.env.DB_HOST;
+  const isLocal = !host || host === 'localhost' || host === '127.0.0.1' || host === '::1';
+  if (!isLocal) {
+    sslConfig = { rejectUnauthorized: false };
+  }
+}
+
 const poolConfig = connectionString
   ? {
       connectionString,
-      ssl: isProduction ? { rejectUnauthorized: false } : false,
+      ssl: sslConfig,
     }
   : {
       user: process.env.DB_USER,
@@ -22,7 +36,7 @@ const poolConfig = connectionString
       host: process.env.DB_HOST,
       port: parseInt(process.env.DB_PORT || '5432', 10),
       database: process.env.DB_NAME,
-      ssl: isProduction ? { rejectUnauthorized: false } : false,
+      ssl: sslConfig,
     };
 
 const pool = new Pool(poolConfig);

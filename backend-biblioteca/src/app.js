@@ -11,14 +11,15 @@ import resenasRoutes from './routes/resenas.routes.js';
 import usuariosRoutes from './routes/usuarios.routes.js';
 import configRoutes from './routes/config.routes.js';
 import preferenciasRoutes from './routes/preferencias.routes.js';
+import prestamosRoutes from './routes/prestamos.routes.js';
 import errorHandler from './middlewares/errorHandler.js';
 
 const app = express();
 
 // Middlewares globales
 app.use(cors());
-app.use(express.json()); // Habilita lectura de payloads JSON en req.body
-app.use(express.urlencoded({ extended: true })); // Habilita lectura de formularios codificados
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Montaje de enrutadores de la API
 app.use('/api', healthRoutes);
@@ -32,6 +33,7 @@ app.use('/api', resenasRoutes);
 app.use('/api', usuariosRoutes);
 app.use('/api', configRoutes);
 app.use('/api', preferenciasRoutes);
+app.use('/api', prestamosRoutes);
 
 // Ruta por defecto para endpoints inexistentes (404)
 app.use((req, res, next) => {
@@ -40,7 +42,7 @@ app.use((req, res, next) => {
   next(error);
 });
 
-// Middleware global de manejo de errores (debe ir al final de todo)
+// Middleware global de manejo de errores
 app.use(errorHandler);
 
 export default app;

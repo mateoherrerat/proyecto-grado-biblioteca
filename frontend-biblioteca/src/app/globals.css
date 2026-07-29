@@ -1,19 +1,176 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:is(.dark *));
+
 :root {
-  --background: #020617; /* slate-950 */
-  --foreground: #f8fafc; /* slate-50 */
+  --background: #FDFBF7;
+  --foreground: #2C2623;
+
+  --card: #FFFFFF;
+  --card-foreground: #2C2623;
+
+  --popover: #FFFFFF;
+  --popover-foreground: #2C2623;
+
+  --primary: #C58B2B;
+  --primary-foreground: #FFFFFF;
+
+  --secondary: #6E675F;
+  --secondary-foreground: #FFFFFF;
+
+  --muted: #F3EFE6;
+  --muted-foreground: #6E675F;
+
+  --accent: #F4EAD3;
+  --accent-foreground: #8C5B00;
+
+  --destructive: #DC2626;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #E8E2D5;
+  --input: #E8E2D5;
+  --ring: #C58B2B;
+
+  --radius: 0.75rem;
+
+  --sidebar: #1E1A17;
+  --sidebar-foreground: #EFECE6;
+  --sidebar-primary: #C58B2B;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #2C2623;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #38312B;
+  --sidebar-ring: #C58B2B;
+}
+
+.dark {
+  --background: #181513;
+  --foreground: #EFECE6;
+
+  --card: #221E1B;
+  --card-foreground: #EFECE6;
+
+  --popover: #221E1B;
+  --popover-foreground: #EFECE6;
+
+  --primary: #D49836;
+  --primary-foreground: #181513;
+
+  --secondary: #3A332E;
+  --secondary-foreground: #EFECE6;
+
+  --muted: #2A2420;
+  --muted-foreground: #A8A095;
+
+  --accent: #382F26;
+  --accent-foreground: #F4EAD3;
+
+  --destructive: #EF4444;
+  --destructive-foreground: #FFFFFF;
+
+  --border: #38312B;
+  --input: #38312B;
+  --ring: #D49836;
+
+  --sidebar: #12100E;
+  --sidebar-foreground: #EFECE6;
+  --sidebar-primary: #D49836;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #221E1B;
+  --sidebar-accent-foreground: #FFFFFF;
+  --sidebar-border: #2A2420;
+  --sidebar-ring: #D49836;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --font-serif: var(--font-playfair), Georgia, serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, .font-serif-title {
+  font-family: var(--font-playfair), Georgia, serif;
+}
+
+/* Glassmorphism Utilities */
+.glass-header {
+  backdrop-filter: blur(12px);
+  background-color: color-mix(in srgb, var(--background) 85%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.glass-card {
+  backdrop-filter: blur(16px);
+  background-color: color-mix(in srgb, var(--card) 90%, transparent);
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent);
+}
+
+.glass-modal {
+  backdrop-filter: blur(24px);
+  background-color: color-mix(in srgb, var(--card) 95%, transparent);
+  border: 1px solid var(--border);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--muted);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
 }

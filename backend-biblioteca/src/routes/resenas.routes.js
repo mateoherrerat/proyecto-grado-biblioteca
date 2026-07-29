@@ -1,18 +1,17 @@
 import { Router } from 'express';
-import * as resenasController from '../controllers/resenas.controller.js';
+import {
+  getResenasDeBiblioteca,
+  crearResena,
+  getResenasDeLibro,
+  crearResenaLibro,
+} from '../controllers/resenas.controller.js';
 
 const router = Router();
 
-/**
- * @route POST /api/bibliotecas/resenas
- * @desc Permite al usuario calificar una sede física (limpieza, atención, etc.).
- */
-router.post('/bibliotecas/resenas', resenasController.crearResena);
+router.get('/bibliotecas/:id/resenas', getResenasDeBiblioteca);
+router.post('/bibliotecas/resenas', crearResena);
 
-/**
- * @route GET /api/bibliotecas/:id/resenas
- * @desc Obtiene todos los comentarios de una sede específica.
- */
-router.get('/bibliotecas/:id/resenas', resenasController.getResenasDeBiblioteca);
+router.get('/libros/:id/resenas', getResenasDeLibro);
+router.post('/libros/resenas', crearResenaLibro);
 
 export default router;
