@@ -80,7 +80,7 @@ export default function PaginaInicioLanding() {
     <LayoutPublico>
       {/* SECCIÓN HERO PRINCIPAL */}
       <section className="relative py-16 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 border-b border-border bg-gradient-to-b from-primary/5 via-background to-background overflow-hidden">
-        <div className="max-w-4xl mx-auto text-center relative z-10">
+        <div className="max-w-4xl mx-auto text-center relative z-0">
           
           <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-foreground mb-6 leading-tight">
             Consulta disponibilidad y reserva tus{" "}

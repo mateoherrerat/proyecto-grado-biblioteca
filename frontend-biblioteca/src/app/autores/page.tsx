@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutPublico } from "@/components/navegacion/layout-publico";
+import { LayoutDirectorio } from "@/components/layout/layout-directorio";
 import { EstadoVacio } from "@/components/ui/estado-vacio";
 import { Users, BookOpen, ArrowRight, Search, Loader2, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -42,40 +42,31 @@ export default function PaginaAutores() {
   );
 
   return (
-    <LayoutPublico>
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        
-        {/* Encabezado con Buscador */}
-        <div className="mb-10 border-b border-border pb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-foreground mb-2">
-              Directorio de Autores
-            </h1>
-            <p className="text-xs text-muted-foreground font-medium">
-              Explora las mentes literarias y autores registrados en nuestra base de datos ({autores.length} autores).
-            </p>
-          </div>
-
-          <div className="relative w-full sm:w-80">
-            <Search className="h-4 w-4 absolute left-3.5 top-3 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Buscar autor por nombre..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-9 pr-9 h-10 text-xs rounded-xl"
-            />
-            {busqueda && (
-              <button
-                onClick={() => setBusqueda("")}
-                className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
-                aria-label="Limpiar búsqueda"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            )}
-          </div>
+    <LayoutDirectorio
+      titulo="Directorio de Autores"
+      subtitulo={`Explora las mentes literarias y autores registrados en nuestra base de datos (${autores.length} autores).`}
+      buscador={
+        <div className="relative w-full sm:w-80">
+          <Search className="h-4 w-4 absolute left-3.5 top-3 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar autor por nombre..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="pl-9 pr-9 h-10 text-xs rounded-xl border-border/80 shadow-xs"
+          />
+          {busqueda && (
+            <button
+              onClick={() => setBusqueda("")}
+              className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+              aria-label="Limpiar búsqueda"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
+      }
+    >
 
         {/* Estado de Carga Pulido */}
         {cargando ? (
@@ -111,20 +102,20 @@ export default function PaginaAutores() {
             {autoresFiltrados.map((autor) => (
               <Card
                 key={autor.id_autor}
-                className="group hover:border-primary/40 hover:shadow-md transition-all p-6 flex flex-col justify-between"
+                className="group hover:border-primary/40 hover:shadow-md transition-all p-6 flex flex-col justify-between border-border/80 shadow-xs"
               >
                 <CardContent className="p-0 space-y-4">
                   <div className="flex items-start justify-between gap-3">
                     <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary/20 to-primary/5 text-primary flex items-center justify-center font-serif font-extrabold text-xl shrink-0 border-2 border-primary/20 shadow-sm">
                       {autor.nombre ? autor.nombre.charAt(0).toUpperCase() : "A"}
                     </div>
-                    <Badge variant="amber" className="font-bold text-[11px] shrink-0">
+                    <Badge variant="amber" className="font-semibold text-[11px] shrink-0">
                       {autor.libros_count ? `${autor.libros_count} Obras` : "Autor de Catálogo"}
                     </Badge>
                   </div>
 
                   <div>
-                    <h3 className="font-serif font-bold text-lg text-foreground group-hover:text-primary transition-colors">
+                    <h3 className="font-serif font-bold text-base text-foreground group-hover:text-primary transition-colors">
                       {autor.nombre}
                     </h3>
                     <p className="text-xs text-muted-foreground mt-1 font-medium">
@@ -160,7 +151,6 @@ export default function PaginaAutores() {
             textoBoton="Limpiar búsqueda"
           />
         )}
-      </main>
-    </LayoutPublico>
+    </LayoutDirectorio>
   );
 }

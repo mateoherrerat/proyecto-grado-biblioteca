@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
-import { LayoutPublico } from "@/components/navegacion/layout-publico";
+import { LayoutDashboard } from "@/components/layout/layout-dashboard";
 import { useAutenticacion } from "@/context/contexto-autenticacion";
 import { EstadoVacio } from "@/components/ui/estado-vacio";
 import { Loader2 } from "lucide-react";
@@ -223,138 +223,78 @@ function ContenidoMisPrestamos() {
           </CardContent>
         </Card>
 
-        {/* Selector de Pestañas (Carrito de Préstamos / Guardados) */}
-        <div className="flex items-center gap-2 border-b border-border/60 mb-6 pb-2">
-          <button
-            onClick={() => setTabActiva("prestamos")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all ${
-              tabActiva === "prestamos"
-                ? "bg-primary text-primary-foreground shadow-2xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-            }`}
-          >
-            <ShoppingBag className="h-4 w-4" />
-            Mis Préstamos & Reservas ({prestamos.length})
-          </button>
-          
-          <button
-            onClick={() => setTabActiva("favoritos")}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl font-extrabold text-xs transition-all ${
-              tabActiva === "favoritos"
-                ? "bg-primary text-primary-foreground shadow-2xs"
-                : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
-            }`}
-          >
-            <Bookmark className="h-4 w-4" />
-            Libros Guardados ({favoritos.length})
-          </button>
+        {/* Encabezado de Sección */}
+        <div className="flex items-center justify-between border-b border-border/60 mb-6 pb-3">
+          <div className="flex items-center gap-2">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+            <h2 className="font-serif text-xl font-extrabold text-foreground">
+              Mis Préstamos & Reservas ({prestamos.length})
+            </h2>
+          </div>
+          <Button variant="outline" size="xs" asChild className="rounded-xl font-bold gap-1.5 shadow-2xs">
+            <Link href="/favoritos">
+              <Bookmark className="h-3.5 w-3.5 text-amber-500" /> Ver Libros Guardados ({favoritos.length})
+            </Link>
+          </Button>
         </div>
 
-        {/* CONTENIDO PESTAÑA 1: PRÉSTAMOS Y RESERVAS */}
-        {tabActiva === "prestamos" && (
-          <div className="space-y-4">
-            {prestamos.length === 0 ? (
-              <EstadoVacio
-                tipo="busqueda"
-                titulo="No tienes préstamos ni reservas activas"
-                descripcion="Explora el catálogo general para consultar ejemplares disponibles en nuestras sedes y realizar solicitudes de retiro."
-                enlaceBoton="/libros"
-                textoBoton="Explorar Catálogo de Libros"
-              />
-            ) : (
-              prestamos.map((pres) => (
-                <Card
-                  key={pres.id}
-                  className="hover:border-primary/40 transition-all shadow-xs border-border/80"
-                >
-                  <CardContent className="p-5 flex flex-col sm:flex-row items-center justify-between gap-6">
-                    <div className="flex items-center gap-4 w-full sm:w-auto">
-                      <div className="w-12 h-14 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold shrink-0">
-                        <BookOpen className="h-6 w-6" />
-                      </div>
-                      <div>
-                        <h3 className="font-serif font-extrabold text-base text-foreground">{pres.titulo}</h3>
-                        <p className="text-xs text-muted-foreground font-medium">por {pres.autor || "Autor Registrado"}</p>
-                        <span className="text-[11px] text-primary font-bold block mt-1">
-                          📍 Sede de Retiro: {pres.sede || "Biblioteca Central"}
-                        </span>
-                      </div>
+        {/* CONTENIDO: PRÉSTAMOS Y RESERVAS */}
+        <div className="space-y-4">
+          {prestamos.length === 0 ? (
+            <EstadoVacio
+              tipo="busqueda"
+              titulo="No tienes préstamos ni reservas activas"
+              descripcion="Explora el catálogo general para consultar ejemplares disponibles en nuestras sedes y realizar solicitudes de retiro."
+              enlaceBoton="/libros"
+              textoBoton="Explorar Catálogo de Libros"
+            />
+          ) : (
+            prestamos.map((pres) => (
+              <Card
+                key={pres.id}
+                className="hover:border-primary/40 transition-all shadow-xs border-border/80"
+              >
+                <CardContent className="p-5 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="flex items-center gap-4 w-full sm:w-auto">
+                    <div className="w-12 h-14 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center font-bold shrink-0">
+                      <BookOpen className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif font-extrabold text-base text-foreground">{pres.titulo}</h3>
+                      <p className="text-xs text-muted-foreground font-medium">por {pres.autor || "Autor Registrado"}</p>
+                      <span className="text-[11px] text-primary font-bold block mt-1">
+                        📍 Sede de Retiro: {pres.sede || "Biblioteca Central"}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-border/60">
+                    <div className="text-right">
+                      <span className="text-[10px] uppercase font-extrabold text-muted-foreground block">Fecha Límite</span>
+                      <span className="text-xs font-extrabold text-foreground">{pres.fechaLimite}</span>
                     </div>
 
-                    <div className="flex flex-wrap items-center justify-between sm:justify-end gap-4 w-full sm:w-auto pt-4 sm:pt-0 border-t sm:border-t-0 border-border/60">
-                      <div className="text-right">
-                        <span className="text-[10px] uppercase font-extrabold text-muted-foreground block">Fecha Límite</span>
-                        <span className="text-xs font-extrabold text-foreground">{pres.fechaLimite}</span>
-                      </div>
+                    <Badge
+                      variant={pres.estado === "Pendiente de retiro" ? "amber" : "emerald"}
+                      className="font-bold text-[10px] px-3 py-1"
+                    >
+                      {pres.estado}
+                    </Badge>
 
-                      <Badge
-                        variant={pres.estado === "Pendiente de retiro" ? "amber" : "emerald"}
-                        className="font-bold text-[10px] px-3 py-1"
-                      >
-                        {pres.estado}
-                      </Badge>
-
-                      <Button
-                        size="xs"
-                        variant="ghost"
-                        onClick={() => cancelarPrestamo(pres.id)}
-                        className="text-xs font-bold text-destructive hover:bg-destructive/10 rounded-xl"
-                      >
-                        Cancelar
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </div>
-        )}
-
-        {/* CONTENIDO PESTAÑA 2: LIBROS GUARDADOS / FAVORITOS */}
-        {tabActiva === "favoritos" && (
-          <div className="space-y-4">
-            {favoritos.length === 0 ? (
-              <EstadoVacio
-                tipo="favoritos"
-                titulo="Aún no has guardado libros"
-
-                descripcion="Haz clic en el icono del marcador de cualquier tarjeta para guardar tus libros de interés y consultarlos más tarde."
-                enlaceBoton="/libros"
-                textoBoton="Ver Catálogo"
-              />
-            ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                {favoritos.map((fav) => (
-                  <Card key={fav.id} className="hover:border-primary/40 transition-all shadow-xs">
-                    <CardContent className="p-4 flex flex-col justify-between h-full space-y-4">
-                      <div className="flex items-start justify-between gap-2">
-                        <div>
-                          <span className="text-[10px] uppercase font-extrabold text-amber-600 tracking-wider block">Guardado</span>
-                          <h4 className="font-serif font-bold text-sm text-foreground line-clamp-1 mt-0.5">{fav.titulo}</h4>
-                          <p className="text-xs text-muted-foreground font-medium truncate">{fav.autor || "Autor Registrado"}</p>
-                        </div>
-                        <Button
-                          size="icon-xs"
-                          variant="ghost"
-                          onClick={() => eliminarFavorito(fav.id)}
-                          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-
-                      <Button size="xs" asChild className="w-full rounded-xl font-bold gap-1 shadow-2xs">
-                        <Link href={`/libros/${fav.id}`}>
-                          Solicitar o Ver Detalle <ArrowRight className="h-3.5 w-3.5" />
-                        </Link>
-                      </Button>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+                    <Button
+                      size="xs"
+                      variant="ghost"
+                      onClick={() => cancelarPrestamo(pres.id)}
+                      className="text-xs font-bold text-destructive hover:bg-destructive/10 rounded-xl"
+                    >
+                      Cancelar
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            ))
+          )}
+        </div>
 
       </main>
   );
@@ -362,7 +302,10 @@ function ContenidoMisPrestamos() {
 
 export default function PaginaMisPrestamos() {
   return (
-    <LayoutPublico>
+    <LayoutDashboard
+      titulo="Mi Panel de Préstamos"
+      subtitulo="Administra tus solicitudes activas, reservas en biblioteca y libros guardados."
+    >
       <Suspense fallback={
         <div className="flex-1 flex flex-col items-center justify-center py-24 gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -373,7 +316,7 @@ export default function PaginaMisPrestamos() {
       }>
         <ContenidoMisPrestamos />
       </Suspense>
-    </LayoutPublico>
+    </LayoutDashboard>
   );
 }
 

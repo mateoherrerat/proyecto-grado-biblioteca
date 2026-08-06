@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { LayoutPublico } from "@/components/navegacion/layout-publico";
+import { LayoutDashboard } from "@/components/layout/layout-dashboard";
 import { EstadoVacio } from "@/components/ui/estado-vacio";
 import { multasService } from "@/services/api";
 import { CircleDollarSign, Search, CheckCircle2, AlertCircle, Clock, Loader2 } from "lucide-react";
@@ -106,24 +106,18 @@ export default function PaginaMultas() {
   const recaudoTotal = multas.reduce((acc, m) => acc + (Number(m.monto) || 0), 0);
 
   return (
-    <LayoutPublico>
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
-        <div className="mb-10 text-center sm:text-left border-b border-border pb-8">
-          <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-foreground mb-2">
-            Gestión de Multas y Devoluciones
-          </h1>
-          <p className="text-xs text-muted-foreground font-medium">
-            Consulta cobros pendientes por entrega extemporánea o daños en ejemplares.
-          </p>
-        </div>
-
-        {/* Banner de Pago Exitoso */}
-        {pagoExitoMsg && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3 shadow-2xs animate-in fade-in">
+    <LayoutDashboard
+      titulo="Gestión de Multas y Devoluciones"
+      subtitulo="Consulta cobros pendientes por entrega extemporánea o daños en ejemplares."
+      bannerPromocional={
+        pagoExitoMsg ? (
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3 shadow-2xs animate-in fade-in">
             <CheckCircle2 className="h-5 w-5 shrink-0" />
             <span className="text-sm font-bold">{pagoExitoMsg}</span>
           </div>
-        )}
+        ) : null
+      }
+    >
 
         {/* Métricas Rápidas */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -313,7 +307,6 @@ export default function PaginaMultas() {
           </Dialog>
         )}
 
-      </main>
-    </LayoutPublico>
+    </LayoutDashboard>
   );
 }

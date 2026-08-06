@@ -39,7 +39,16 @@ export function TarjetaLibro(props: LibroProps) {
     categoria = "General",
   } = props;
 
-  const libroId = props.slug || props.id_libro || props.id || "1";
+  const slugify = (str: string) =>
+    str
+      .toLowerCase()
+      .trim()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9\s-]/g, "")
+      .replace(/\s+/g, "-");
+
+  const libroId = props.slug || (props.titulo ? slugify(props.titulo) : null) || props.id_libro || props.id || "1";
 
   // Datos reales traídos directamente de PostgreSQL
   const estaDisponible = props.estado_disponibilidad
@@ -124,7 +133,7 @@ export function TarjetaLibro(props: LibroProps) {
   };
 
   return (
-    <Card className="group flex flex-col justify-between overflow-hidden border-border/30 hover:border-primary/30 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
+    <Card className="group flex flex-col justify-between overflow-hidden border-border/80 shadow-xs hover:border-primary/40 hover:shadow-md transition-all duration-300 transform hover:-translate-y-1">
       <CardContent className="p-4">
         {/* Contenedor Imagen Portada */}
         <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden bg-muted mb-4 shadow-xs group-hover:shadow-sm transition-shadow">
@@ -198,7 +207,7 @@ export function TarjetaLibro(props: LibroProps) {
           size="sm"
           className="w-full text-xs font-semibold rounded-xl border-border/60 hover:bg-muted"
         >
-          <Link href={`/libros/${libroId}`}>Ver Detalle</Link>
+          <Link href={`/libros/detalle/${libroId}`}>Ver Detalle</Link>
         </Button>
         <Button
           size="sm"

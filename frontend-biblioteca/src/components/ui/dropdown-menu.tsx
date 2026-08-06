@@ -31,11 +31,11 @@ const DropdownMenuContent = React.forwardRef<
   }
 >(({ className, side, align, sideOffset = 12, children, ...props }, ref) => (
   <DropdownMenuPortal>
-    <DropdownMenuPositioner side={side} align={align} sideOffset={sideOffset}>
+    <DropdownMenuPositioner side={side} align={align} sideOffset={sideOffset} className="z-[9999]">
       <BaseMenu.Popup
         ref={ref as any}
         className={cn(
-          "z-[100] min-w-[8rem] overflow-hidden rounded-2xl border bg-popover p-1 text-popover-foreground shadow-2xl transition-all mt-3",
+          "z-[9999] min-w-[8rem] overflow-hidden rounded-2xl border border-border/80 bg-popover p-1 text-popover-foreground shadow-2xl transition-all mt-3",
           className
         )}
         {...props}

@@ -1,25 +1,19 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useAutenticacion } from "@/context/contexto-autenticacion";
 import {
-  Search,
   Bookmark,
   LogOut,
   BookOpen,
   LayoutDashboard,
   Menu,
   X,
-  User,
   Settings,
-  ArrowRight,
-  FileText,
-  Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -27,121 +21,16 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { librosService, autoresService, publicacionesService } from "@/services/api";
-import { coincideFuzzy } from "@/lib/fuzzy-search";
-import { ImagenPortadaLibro } from "@/components/libros/imagen-portada-libro";
 
 export function EncabezadoNavegacion() {
   const pathname = usePathname();
-  const router = useRouter();
   const { usuario, rol, estaAutenticado, cerrarSesion } = useAutenticacion();
-  const [busqueda, setBusqueda] = useState("");
   const [menuAbierto, setMenuAbierto] = useState(false);
-
-  // Estados para el Buscador En Vivo Global
-  const [resultadosLibros, setResultadosLibros] = useState<any[]>([]);
-  const [resultadosAutores, setResultadosAutores] = useState<any[]>([]);
-  const [resultadosNovedades, setResultadosNovedades] = useState<any[]>([]);
-  const [buscando, setBuscando] = useState(false);
-  const [popoverAbierto, setPopoverAbierto] = useState(false);
-  const searchRef = useRef<HTMLDivElement>(null);
-
-  // Detección de Scroll para Header Dinámico (Aparece suavemente al subir)
-  const [headerVisible, setHeaderVisible] = useState(true);
-  const [enTop, setEnTop] = useState(true);
-  const ultimoScrollY = useRef(0);
 
   // Ocultar header público en rutas administrativas
   if (pathname.startsWith("/admin")) {
     return null;
   }
-
-  // Cerrar popover de búsqueda al hacer clic fuera
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
-        setPopoverAbierto(false);
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  // Manejo inteligente de Scroll
-  useEffect(() => {
-    function manejarScroll() {
-      const scrollActual = window.scrollY;
-
-      if (scrollActual <= 20) {
-        setEnTop(true);
-        setHeaderVisible(true);
-      } else {
-        setEnTop(false);
-        if (scrollActual > ultimoScrollY.current + 10) {
-          setHeaderVisible(false);
-        } else if (scrollActual < ultimoScrollY.current - 5) {
-          setHeaderVisible(true);
-        }
-      }
-
-      ultimoScrollY.current = scrollActual;
-    }
-
-    window.addEventListener("scroll", manejarScroll, { passive: true });
-    return () => window.removeEventListener("scroll", manejarScroll);
-  }, []);
-
-  // Búsqueda en vivo al escribir en la barra superior
-  useEffect(() => {
-    const term = busqueda.trim();
-    if (term.length < 2) {
-      setResultadosLibros([]);
-      setResultadosAutores([]);
-      setResultadosNovedades([]);
-      setPopoverAbierto(false);
-      return;
-    }
-
-    const timer = setTimeout(async () => {
-      try {
-        setBuscando(true);
-        const [dataLibros, dataAutores, dataNovedades] = await Promise.all([
-          librosService.getAll(term).catch(() => []),
-          autoresService.getAll().catch(() => []),
-          publicacionesService.getAll().catch(() => []),
-        ]);
-
-        const librosMatch = (dataLibros || []).slice(0, 4);
-        const autoresMatch = (dataAutores || [])
-          .filter((a: any) => coincideFuzzy(term, a.nombre || ""))
-          .slice(0, 3);
-        const novedadesMatch = (dataNovedades || [])
-          .filter(
-            (p: any) =>
-              coincideFuzzy(term, p.descripcion || "") ||
-              coincideFuzzy(term, p.autor_nombre || "")
-          )
-          .slice(0, 2);
-
-        setResultadosLibros(librosMatch);
-        setResultadosAutores(autoresMatch);
-        setResultadosNovedades(novedadesMatch);
-        setPopoverAbierto(true);
-      } catch (err) {
-        console.error("Error en búsqueda global:", err);
-      } finally {
-        setBuscando(false);
-      }
-    }, 250);
-
-    return () => clearTimeout(timer);
-  }, [busqueda]);
-
-  const ejecutarBusquedaGeneral = (query: string) => {
-    if (!query.trim()) return;
-    setPopoverAbierto(false);
-    router.push(`/libros?q=${encodeURIComponent(query.trim())}`);
-  };
 
   const navLinks = [
     { label: "Inicio", href: "/" },
@@ -155,17 +44,7 @@ export function EncabezadoNavegacion() {
   const inicialUsuario = (usuario?.nombre || usuario?.email || "U").charAt(0).toUpperCase();
 
   return (
-    <header
-      className={`sticky top-0 z-50 transition-all duration-300 ${
-        headerVisible
-          ? "translate-y-0 opacity-100"
-          : "-translate-y-full opacity-0 pointer-events-none"
-      } ${
-        enTop
-          ? "bg-background border-b border-border/60 shadow-2xs"
-          : "bg-background/90 backdrop-blur-xl border-b border-border/80 shadow-md"
-      }`}
-    >
+    <header className="sticky top-0 z-[100] bg-background/95 backdrop-blur-md border-b border-border/80 shadow-xs">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           
@@ -191,7 +70,7 @@ export function EncabezadoNavegacion() {
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all ${
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
                     activo
                       ? "bg-primary/10 text-primary font-extrabold shadow-2xs"
                       : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
@@ -203,152 +82,8 @@ export function EncabezadoNavegacion() {
             })}
           </nav>
 
-          {/* ZONA 3: BUSCADOR GLOBAL + PERFIL SHADCN DESPLEGABLE */}
+          {/* ZONA 3: PERFIL Y AUTENTICACIÓN */}
           <div className="flex items-center gap-3">
-            
-            {/* Buscador Consistente */}
-            <div className="relative w-40 sm:w-52 lg:w-64" ref={searchRef}>
-              <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-muted-foreground" />
-              <Input
-                type="text"
-                placeholder="Buscar en catálogo..."
-                value={busqueda}
-                onChange={(e) => setBusqueda(e.target.value)}
-                onFocus={() => {
-                  if (busqueda.trim().length >= 2) setPopoverAbierto(true);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    ejecutarBusquedaGeneral(busqueda);
-                  }
-                }}
-                className="pl-8 pr-7 h-8 text-xs rounded-full bg-muted/40 border-border/60 focus:bg-background focus:ring-1 focus:ring-primary/40 transition-all"
-              />
-
-              {busqueda && (
-                <button
-                  onClick={() => {
-                    setBusqueda("");
-                    setPopoverAbierto(false);
-                  }}
-                  className="absolute right-2.5 top-2 text-muted-foreground hover:text-foreground"
-                >
-                  <X className="h-3.5 w-3.5" />
-                </button>
-              )}
-
-              {/* Popover Desplegable de Resultados */}
-              {popoverAbierto && (
-                <div className="absolute top-10 right-0 md:left-0 w-80 sm:w-96 bg-card border border-border/80 rounded-2xl shadow-xl p-3 z-50 text-xs space-y-3 backdrop-blur-xl">
-                  
-                  {buscando ? (
-                    <div className="p-4 text-center text-muted-foreground text-xs font-medium">
-                      Buscando coincidencias en la base de datos...
-                    </div>
-                  ) : (
-                    <>
-                      {/* Libros */}
-                      {resultadosLibros.length > 0 && (
-                        <div>
-                          <span className="text-[10px] uppercase font-extrabold text-primary tracking-wider px-2 block mb-2 flex items-center gap-1">
-                            <BookOpen className="h-3.5 w-3.5" /> Libros BD ({resultadosLibros.length})
-                          </span>
-                          <div className="space-y-1.5">
-                            {resultadosLibros.map((l) => (
-                              <Link
-                                key={l.id_libro}
-                                href={`/libros/${l.slug || l.id_libro}`}
-                                onClick={() => setPopoverAbierto(false)}
-                                className="flex items-center gap-3 p-2 rounded-xl hover:bg-muted/80 transition-colors group"
-                              >
-                                <div className="w-8 h-10 rounded overflow-hidden bg-muted border border-border/40 shrink-0">
-                                  <ImagenPortadaLibro
-                                    libro={l}
-                                    alt={l.titulo}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                                <div className="flex-1 truncate">
-                                  <p className="font-bold text-foreground group-hover:text-primary transition-colors truncate">
-                                    {l.titulo}
-                                  </p>
-                                  <p className="text-[10px] text-muted-foreground truncate">
-                                    {l.autor || "Autor Desconocido"} • {l.categoria || "General"}
-                                  </p>
-                                </div>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Autores */}
-                      {resultadosAutores.length > 0 && (
-                        <div className="pt-2 border-t border-border/60">
-                          <span className="text-[10px] uppercase font-extrabold text-primary tracking-wider px-2 block mb-1.5 flex items-center gap-1">
-                            <Users className="h-3.5 w-3.5" /> Autores ({resultadosAutores.length})
-                          </span>
-                          <div className="space-y-1">
-                            {resultadosAutores.map((a) => (
-                              <Link
-                                key={a.id_autor}
-                                href={`/libros?q=${encodeURIComponent(a.nombre)}`}
-                                onClick={() => setPopoverAbierto(false)}
-                                className="flex items-center justify-between p-2 rounded-xl hover:bg-muted/80 transition-colors"
-                              >
-                                <span className="font-bold text-foreground truncate">{a.nombre}</span>
-                                <span className="text-[10px] text-primary font-bold">Ver catálogo ➔</span>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {/* Novedades */}
-                      {resultadosNovedades.length > 0 && (
-                        <div className="pt-2 border-t border-border/60">
-                          <span className="text-[10px] uppercase font-extrabold text-primary tracking-wider px-2 block mb-1.5 flex items-center gap-1">
-                            <FileText className="h-3.5 w-3.5" /> Novedades BD ({resultadosNovedades.length})
-                          </span>
-                          <div className="space-y-1">
-                            {resultadosNovedades.map((n) => (
-                              <Link
-                                key={n.id_novedad}
-                                href="/publicaciones"
-                                onClick={() => setPopoverAbierto(false)}
-                                className="block p-2 rounded-xl hover:bg-muted/80 transition-colors"
-                              >
-                                <p className="font-semibold text-foreground line-clamp-1">{n.descripcion}</p>
-                                <p className="text-[10px] text-muted-foreground">Por: {n.autor_nombre}</p>
-                              </Link>
-                            ))}
-                          </div>
-                        </div>
-                      )}
-
-                      {resultadosLibros.length === 0 &&
-                        resultadosAutores.length === 0 &&
-                        resultadosNovedades.length === 0 && (
-                          <div className="p-4 text-center text-muted-foreground text-xs font-medium">
-                            No se encontraron coincidencias para "{busqueda}".
-                          </div>
-                        )}
-
-                      {/* Pie del Popover */}
-                      <button
-                        onClick={() => ejecutarBusquedaGeneral(busqueda)}
-                        className="w-full text-center py-2 bg-primary text-primary-foreground font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-1.5 shadow-2xs"
-                      >
-                        Ver resultados en catálogo <ArrowRight className="h-3.5 w-3.5" />
-                      </button>
-                    </>
-                  )}
-
-                </div>
-              )}
-            </div>
-
-            {/* ZONA DE CUENTA DE USUARIO CON DROPDOWN DE SHADCN */}
             {estaAutenticado ? (
               <div className="flex items-center gap-2">
                 
@@ -362,7 +97,7 @@ export function EncabezadoNavegacion() {
                   </Button>
                 )}
 
-                {/* Avatar Interactivo con Dropdown Menu Shadcn Perfeccionado */}
+                {/* Avatar Interactivo con Dropdown Menu Shadcn */}
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <button
@@ -401,7 +136,7 @@ export function EncabezadoNavegacion() {
                     </DropdownMenuItem>
 
                     <DropdownMenuItem asChild>
-                      <Link href="/mis-prestamos?tab=favoritos" className="flex items-center gap-2.5 font-bold py-2 px-2.5 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer">
+                      <Link href="/favoritos" className="flex items-center gap-2.5 font-bold py-2 px-2.5 rounded-xl hover:bg-primary/10 hover:text-primary transition-colors cursor-pointer">
                         <BookOpen className="h-4 w-4 text-amber-500" />
                         Libros Guardados (Favoritos)
                       </Link>
@@ -495,6 +230,13 @@ export function EncabezadoNavegacion() {
                   className="block px-3 py-2.5 rounded-xl bg-muted font-bold"
                 >
                   Mis Préstamos & Reservas
+                </Link>
+                <Link
+                  href="/favoritos"
+                  onClick={() => setMenuAbierto(false)}
+                  className="block px-3 py-2.5 rounded-xl hover:bg-muted font-bold"
+                >
+                  Libros Guardados (Favoritos)
                 </Link>
                 {rol === "administrador" && (
                   <Link

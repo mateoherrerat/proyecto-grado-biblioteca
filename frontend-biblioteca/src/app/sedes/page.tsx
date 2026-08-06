@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { LayoutPublico } from "@/components/navegacion/layout-publico";
+import { LayoutDirectorio } from "@/components/layout/layout-directorio";
 import { EstadoVacio } from "@/components/ui/estado-vacio";
 import { Building2, MapPin, Clock, Phone, Search, Loader2, CheckCircle2, Navigation, ArrowRight } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -53,31 +53,22 @@ export default function PaginaSedes() {
   });
 
   return (
-    <LayoutPublico>
-      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-        
-        {/* Encabezado Principal de Sedes */}
-        <div className="mb-8 border-b border-border/80 pb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-          <div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-foreground mb-1.5">
-              Sedes Físicas & Bibliotecas
-            </h1>
-            <p className="text-xs text-muted-foreground font-medium">
-              Directorio de sedes y puntos de atención de la red de bibliotecas LaBiblioteca ({sedes.length} sedes registradas).
-            </p>
-          </div>
-
-          <div className="relative w-full sm:w-80">
-            <Search className="h-4 w-4 absolute left-3.5 top-3 text-muted-foreground" />
-            <Input
-              type="text"
-              placeholder="Buscar por sede, ciudad o dirección..."
-              value={busqueda}
-              onChange={(e) => setBusqueda(e.target.value)}
-              className="pl-9 h-10 text-xs rounded-xl border-border/60"
-            />
-          </div>
+    <LayoutDirectorio
+      titulo="Sedes Físicas & Bibliotecas"
+      subtitulo={`Directorio de sedes y puntos de atención de la red de bibliotecas LaBiblioteca (${sedes.length} sedes registradas).`}
+      buscador={
+        <div className="relative w-full sm:w-80">
+          <Search className="h-4 w-4 absolute left-3.5 top-3 text-muted-foreground" />
+          <Input
+            type="text"
+            placeholder="Buscar por sede, ciudad o dirección..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+            className="pl-9 h-10 text-xs rounded-xl border-border/80 shadow-xs"
+          />
         </div>
+      }
+    >
 
         {/* Estado de Carga Pulido */}
         {cargando ? (
@@ -115,7 +106,7 @@ export default function PaginaSedes() {
             {sedesFiltradas.map((sede) => (
               <Card
                 key={sede.id_biblioteca}
-                className="group hover:border-primary/40 hover:shadow-md transition-all p-6 flex flex-col justify-between border border-border/80"
+                className="group hover:border-primary/40 hover:shadow-md transition-all p-6 flex flex-col justify-between border border-border/80 shadow-xs"
               >
                 <CardContent className="p-0">
                   <div className="flex items-center justify-between mb-4">
@@ -126,17 +117,17 @@ export default function PaginaSedes() {
                     <div className="flex items-center gap-2">
                       <Badge
                         variant={estaAbiertaHoy ? "emerald" : "amber"}
-                        className="font-extrabold text-[10px] uppercase tracking-wider"
+                        className="font-semibold text-[11px]"
                       >
                         {estaAbiertaHoy ? "● Abierto Ahora" : "○ Cerrado"}
                       </Badge>
-                      <Badge variant="outline" className="font-bold text-[10px]">
+                      <Badge variant="outline" className="font-semibold text-[11px]">
                         {sede.ubicacion || "Sede Física"}
                       </Badge>
                     </div>
                   </div>
 
-                  <h3 className="font-serif font-extrabold text-xl text-foreground mb-3 group-hover:text-primary transition-colors">
+                  <h3 className="font-serif font-bold text-base text-foreground mb-3 group-hover:text-primary transition-colors">
                     {sede.nombre}
                   </h3>
 
@@ -189,7 +180,6 @@ export default function PaginaSedes() {
             textoBoton="Limpiar búsqueda"
           />
         )}
-      </main>
-    </LayoutPublico>
+    </LayoutDirectorio>
   );
 }

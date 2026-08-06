@@ -45,13 +45,13 @@ function SheetContent({
         className={cn(
           "fixed z-50 flex flex-col gap-4 bg-background shadow-lg transition-all duration-300",
           side === "right" &&
-            "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",
+            "inset-y-0 right-0 h-full w-3/4 border-l border-border/80 sm:max-w-sm data-[ending-style]:translate-x-full data-[starting-style]:translate-x-full",
           side === "left" &&
-            "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full",
+            "inset-y-0 left-0 h-full w-3/4 border-r border-border/80 sm:max-w-sm data-[ending-style]:-translate-x-full data-[starting-style]:-translate-x-full",
           side === "top" &&
-            "inset-x-0 top-0 h-auto border-b data-[ending-style]:-translate-y-full data-[starting-style]:-translate-y-full",
+            "inset-x-0 top-0 h-auto border-b border-border/80 data-[ending-style]:-translate-y-full data-[starting-style]:-translate-y-full",
           side === "bottom" &&
-            "inset-x-0 bottom-0 h-auto border-t data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
+            "inset-x-0 bottom-0 h-auto border-t border-border/80 data-[ending-style]:translate-y-full data-[starting-style]:translate-y-full",
           className
         )}
         {...props}

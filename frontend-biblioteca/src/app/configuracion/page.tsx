@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { LayoutPublico } from "@/components/navegacion/layout-publico";
+import { LayoutFormulario } from "@/components/layout/layout-formulario";
 import { useAutenticacion } from "@/context/contexto-autenticacion";
 import { User, Bell, Shield, Save, CheckCircle2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -26,41 +26,21 @@ export default function PaginaConfiguracion() {
   };
 
   return (
-    <LayoutPublico>
-      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-        
-        {guardadoExito && (
-          <div className="mb-6 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3 font-bold text-xs shadow-2xs">
+    <LayoutFormulario
+      titulo="Configuración y Perfil"
+      subtitulo="Administra tus datos personales, preferencias de notificación y seguridad de la cuenta en LaBiblioteca."
+      bannerNotificacion={
+        guardadoExito ? (
+          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 flex items-center gap-3 font-bold text-xs shadow-2xs">
             <CheckCircle2 className="h-4 w-4 shrink-0" />
             <span>Configuración y preferencias actualizadas correctamente.</span>
           </div>
-        )}
-
-        <div className="mb-8 border-b border-border/80 pb-6 flex flex-col sm:flex-row sm:items-center gap-6 justify-between">
-          <div>
-            <h1 className="font-serif text-3xl font-extrabold text-foreground mb-1.5">
-              Configuración y Perfil
-            </h1>
-            <p className="text-xs text-muted-foreground font-medium">
-              Administra tus datos personales, preferencias de notificación y seguridad de la cuenta en LaBiblioteca.
-            </p>
-          </div>
-          {estaAutenticado && (
-            <div className="flex items-center gap-3 bg-muted/50 rounded-2xl px-4 py-3 border border-border/60">
-              <div className="w-12 h-12 rounded-full bg-primary text-primary-foreground font-extrabold text-xl flex items-center justify-center shadow-sm shrink-0">
-                {(usuario?.nombre || "U").charAt(0).toUpperCase()}
-              </div>
-              <div>
-                <p className="text-sm font-extrabold text-foreground leading-tight">{usuario?.nombre || "Usuario Lector"}</p>
-                <p className="text-xs text-muted-foreground font-medium">{usuario?.email}</p>
-                <p className="text-[10px] font-black text-primary uppercase tracking-widest mt-0.5">{usuario?.rol || "lector"}</p>
-              </div>
-            </div>
-          )}
-        </div>
+        ) : null
+      }
+    >
 
         <Tabs defaultValue="perfil" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 max-w-md bg-muted/60 p-1 rounded-xl">
+          <TabsList className="grid w-full grid-cols-3 max-w-md">
             <TabsTrigger value="perfil" className="gap-2 text-xs font-bold rounded-lg">
               <User className="h-4 w-4" /> Perfil
             </TabsTrigger>
@@ -109,15 +89,6 @@ export default function PaginaConfiguracion() {
                         value={usuario?.codigoBiblioteca || "BIB-2026-352"}
                         disabled
                         className="h-10 text-xs rounded-xl bg-muted/60 font-mono"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="rol" className="text-xs font-bold">Tipo de Usuario</Label>
-                      <Input
-                        id="rol"
-                        value={usuario?.rol ? usuario.rol.toUpperCase() : "LECTOR"}
-                        disabled
-                        className="h-10 text-xs rounded-xl bg-muted/60 font-bold text-primary"
                       />
                     </div>
                   </div>
@@ -217,7 +188,6 @@ export default function PaginaConfiguracion() {
             </Card>
           </TabsContent>
         </Tabs>
-      </main>
-    </LayoutPublico>
+    </LayoutFormulario>
   );
 }

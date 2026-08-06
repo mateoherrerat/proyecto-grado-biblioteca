@@ -89,7 +89,7 @@ export const findById = async (idOrSlug) => {
     LEFT JOIN bibliotecas b ON ej.id_biblioteca = b.id_biblioteca
     LEFT JOIN estados_disponibilidades ed ON ej.id_estado_disponibilidad = ed.id_estado_disponibilidad
     LEFT JOIN resenas_libros rl ON l.id_libro = rl.id_libro
-    WHERE l.id_libro::text = $1 OR l.slug = $1
+    WHERE l.id_libro::text = $1 OR l.slug = $1 OR LOWER(REPLACE(l.titulo, ' ', '-')) = LOWER($1)
     GROUP BY l.id_libro, c.nombre;
   `;
   const result = await query(text, [idOrSlug]);

@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import Link from "next/link";
 import { LoginForm } from "@/components/login-form";
-import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 
 export const metadata = {
   title: "Iniciar Sesión - LaBiblioteca",
@@ -25,17 +25,6 @@ export default function PaginaLogin() {
       {/* Resplandores decorativos de fondo */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/8 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
-
-      {/* Logo + Marca sobre el formulario */}
-      <div className="flex flex-col items-center gap-3 mb-6 relative z-10">
-        <div className="w-12 h-12 rounded-2xl bg-primary text-primary-foreground flex items-center justify-center shadow-md">
-          <BookOpen className="h-6 w-6" />
-        </div>
-        <div className="text-center">
-          <p className="font-serif text-2xl font-extrabold text-foreground tracking-tight">LaBiblioteca</p>
-          <p className="text-xs text-muted-foreground font-medium">Red de Bibliotecas · INEM José Félix de Restrepo</p>
-        </div>
-      </div>
 
       {/* Tarjeta de Formulario Centrada */}
       <div className="w-full max-w-sm sm:max-w-md bg-card border border-border/80 rounded-2xl p-6 sm:p-8 shadow-xl backdrop-blur-xl relative z-10">

@@ -30,44 +30,25 @@ const ContextoAutenticacion = createContext<ContextoAutenticacionTipo | undefine
 const CLAVE_STORAGE_USUARIO = "bookshub_usuario_sesion";
 
 export function ProveedorAutenticacion({ children }: { children: React.ReactNode }) {
-  const [usuario, setUsuario] = useState<Usuario | null>(null);
+  const [usuario, setUsuario] = useState<Usuario | null>(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const sesionLocal = localStorage.getItem(CLAVE_STORAGE_USUARIO);
+        if (sesionLocal) {
+          return JSON.parse(sesionLocal);
+        }
+      } catch (err) {
+        console.error("Error al cargar sesión desde localStorage:", err);
+      }
+    }
+    return null;
+  });
   const [cargando, setCargando] = useState(true);
 
-  // Escuchar la sesión de Supabase Auth
+  // Escuchar la sesión de Supabase Auth sin destruir la sesión local en recargas
   useEffect(() => {
     // 1. Obtener la sesión activa de Supabase
     supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session?.user) {
-        const u = session.user;
-        const userEmail = u.email || "";
-        const esAdmin = userEmail.toLowerCase().includes("admin");
-        const rolAsignado: RolUsuario = (u.user_metadata?.rol as RolUsuario) || (esAdmin ? "administrador" : "lector");
-
-        setUsuario({
-          id: u.id,
-          nombre: u.user_metadata?.nombre || userEmail.split("@")[0],
-          email: userEmail,
-          rol: rolAsignado,
-          codigoBiblioteca: u.user_metadata?.codigoBiblioteca || `BIB-2026-${Math.floor(100 + Math.random() * 900)}`,
-        });
-      } else {
-        // Cargar fallback local o dejar desautenticado por defecto
-        try {
-          const sesionLocal = localStorage.getItem(CLAVE_STORAGE_USUARIO);
-          if (sesionLocal) {
-            setUsuario(JSON.parse(sesionLocal));
-          } else {
-            setUsuario(null);
-          }
-        } catch {
-          setUsuario(null);
-        }
-      }
-      setCargando(false);
-    });
-
-    // 2. Suscribirse a cambios de estado de autenticación (login / logout)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         const u = session.user;
         const userEmail = u.email || "";
@@ -84,6 +65,39 @@ export function ProveedorAutenticacion({ children }: { children: React.ReactNode
         setUsuario(nuevoUsuario);
         localStorage.setItem(CLAVE_STORAGE_USUARIO, JSON.stringify(nuevoUsuario));
       } else {
+        // Cargar fallback local o verificar si hay sesión almacenada
+        try {
+          const sesionLocal = localStorage.getItem(CLAVE_STORAGE_USUARIO);
+          if (sesionLocal) {
+            setUsuario(JSON.parse(sesionLocal));
+          }
+        } catch {
+          // mantener estado actual
+        }
+      }
+      setCargando(false);
+    }).catch(() => {
+      setCargando(false);
+    });
+
+    // 2. Suscribirse a cambios de estado de autenticación (solo borrar en SIGNED_OUT explícito)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (session?.user) {
+        const u = session.user;
+        const userEmail = u.email || "";
+        const esAdmin = userEmail.toLowerCase().includes("admin");
+        const rolAsignado: RolUsuario = (u.user_metadata?.rol as RolUsuario) || (esAdmin ? "administrador" : "lector");
+
+        const nuevoUsuario: Usuario = {
+          id: u.id,
+          nombre: u.user_metadata?.nombre || userEmail.split("@")[0],
+          email: userEmail,
+          rol: rolAsignado,
+          codigoBiblioteca: u.user_metadata?.codigoBiblioteca || `BIB-2026-${Math.floor(100 + Math.random() * 900)}`,
+        };
+        setUsuario(nuevoUsuario);
+        localStorage.setItem(CLAVE_STORAGE_USUARIO, JSON.stringify(nuevoUsuario));
+      } else if (event === "SIGNED_OUT") {
         setUsuario(null);
         localStorage.removeItem(CLAVE_STORAGE_USUARIO);
       }
